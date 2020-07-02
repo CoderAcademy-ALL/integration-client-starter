@@ -1,12 +1,14 @@
 import React, {useState} from 'react'
 import {divStyles, inputStyles, labelStyles} from '../styles'
 import {useGlobalState} from '../config/store'
+import {loginUser} from '../services/authServices'
 
 const SignIn = ({history}) => {
     const initialFormState = {
         username: "",
         password: ""
     } 
+    const [errorMessage, setErrorMessage] = useState(null);
     const [userDetails,setUserDetails] = useState(initialFormState)
     const {dispatch} = useGlobalState()
 
@@ -20,19 +22,28 @@ const SignIn = ({history}) => {
     }
     function handleSubmit(event) {
         event.preventDefault()
-        loginUser()
-        history.push("/")
-    }
-    // Login user
-    function loginUser() {
-        dispatch({
-        type: "setLoggedInUser",
-        data: userDetails.username
+        loginUser(userDetails)
+        .then((user) => {
+            dispatch({
+                type: "setLoggedInUser",
+                data: userDetails.username
+                })
+            history.push("/");
         })
+        .catch(error => {
+            console.error(error)
+            setErrorMessage("Login failed. Please check your username and password");
+        })
+        
     }
+   
+    
+       
+
 
     return (
         <form onSubmit={handleSubmit}>
+            {errorMessage && <p style={{color: 'red'}}>{errorMessage}</p>}
             <div style={divStyles}>
                 <label style={labelStyles}>Username</label>
                 <input style={inputStyles} required type="text" name="username" placeholder="Enter a username" onChange={handleChange}></input>

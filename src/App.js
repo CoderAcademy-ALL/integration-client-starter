@@ -1,6 +1,5 @@
 import React, {useReducer, useEffect} from 'react'
 import {BrowserRouter, Route} from 'react-router-dom'
-import blogData from './data/post_data'
 import Nav from './components/Nav'
 import BlogPosts from './components/BlogPosts'
 import BlogPost from './components/BlogPost'
@@ -10,7 +9,7 @@ import SignIn from './components/SignIn'
 import Register from './components/Register'
 import stateReducer from './config/stateReducer'
 import {StateContext} from './config/store'
-import {getPostFromId} from './services/blogPostServices'
+import {getPostFromId, getAllBlogPosts} from './services/blogPostServices'
 
 const App = () => {
 
@@ -24,11 +23,21 @@ const App = () => {
   const [store, dispatch] = useReducer(stateReducer,initialState)
   const {blogPosts} = store
 
-  useEffect(() => {
-    dispatch({
-      type: "setBlogPosts",
-      data: blogData
+  function fetchBlogPosts(){
+    getAllBlogPosts()
+    .then(blogData => {
+      dispatch({
+        type: "setBlogPosts",
+        data: blogData
+      })
     })
+    .catch(error => {
+      console.log("An error occured fetching posts: ", error);
+    })
+  }
+
+  useEffect(() => {
+    fetchBlogPosts();
   },[])
 
   return (

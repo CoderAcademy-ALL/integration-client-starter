@@ -1,6 +1,7 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 import {useGlobalState} from '../config/store'
+import {logoutUser} from '../services/authServices'
 
 const Nav = () => {
     const divStyles = {
@@ -13,6 +14,10 @@ const Nav = () => {
     }
     // Logout user
     function handleLogout() {
+        logoutUser()
+        .then(response => console.log("successful logout: ", response.status))
+        .catch(error => console.log("Server down: ", error))
+        
         dispatch({
         type: "setLoggedInUser",
         data: null

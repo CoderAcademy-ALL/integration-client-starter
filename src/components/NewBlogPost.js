@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import {withRouter} from 'react-router-dom'
 import {divStyles, inputStyles, labelStyles} from '../styles'
 import {useGlobalState} from '../config/store'
+import {addBlogPost} from '../services/blogPostServices';
 
 const NewBlogPost = ({history}) => {
     const textAreaStyles = {
@@ -10,11 +11,7 @@ const NewBlogPost = ({history}) => {
         width: "70vw"
     }
 
-    // Gets the next available id for a new post 
-    function getNextId(){
-        const ids = blogPosts.map((post) => post._id)
-        return ids.sort()[ids.length-1] + 1
-    }
+ 
 
     function handleChange(event) {
         const name = event.target.name
@@ -26,19 +23,24 @@ const NewBlogPost = ({history}) => {
     }
     function handleSubmit(event) {
         event.preventDefault()
-        const nextId = getNextId()
         const newPost = {
-            _id: nextId,
             title: formState.title,
             category: formState.category || "general",
-            modified_date: new Date(),
             content: formState.content
         }
-        dispatch({
-            type: "setBlogPosts",
-            data: [...blogPosts, newPost]
+        addBlogPost(newPost)
+        .then( newPost => {
+            dispatch({
+                type: "setBlogPosts",
+                data: [newPost, ...blogPosts]
+            })
+            history.push(`/posts/${newPost._id}`)
         })
-        history.push(`/posts/${nextId}`)
+        .catch(error => {
+            console.log("Caught error making post: ", error);
+        })
+       
+        
     }
     const initialFormState = {
         title: "",

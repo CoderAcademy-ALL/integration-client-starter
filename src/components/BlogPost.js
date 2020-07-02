@@ -7,6 +7,7 @@ const BlogPost = ({history, post, showControls}) => {
     const {store, dispatch} = useGlobalState()
     const {blogPosts} = store
     // If we don't have a post, return null
+    console.log("got post: ", post);
     if (!post) return null
 
     const linkStyles = {
