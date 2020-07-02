@@ -1,6 +1,8 @@
 import React, {useState} from 'react'
 import {divStyles, inputStyles, labelStyles} from '../styles'
 import {useGlobalState} from '../config/store'
+import {registerUser} from '../services/authServices';
+
 
 const Register = ({history}) => {
     const initialFormState = {
@@ -8,6 +10,7 @@ const Register = ({history}) => {
         email: "",
         password: ""
     } 
+    const [errorMessage, setErrorMessage] = useState(null);
     const [userDetails,setUserDetails] = useState(initialFormState)
     const {dispatch} = useGlobalState()
 
@@ -21,15 +24,25 @@ const Register = ({history}) => {
     }
     function handleSubmit(event) {
         event.preventDefault()
-        dispatch({
-            type: "setLoggedInUser",
-            data: userDetails.username
+        registerUser(userDetails)
+        .then(response => {
+            dispatch({
+                type: "setLoggedInUser",
+                data: userDetails.username
+            })
+            history.push("/")
+           
         })
-        history.push("/")
+        .catch(error => {
+            setErrorMessage("Oops something went wrong, try another email");
+        });
+       
+        
     }
 
     return (
         <form onSubmit={handleSubmit}>
+            {errorMessage && <p style={{color: 'red'}}>{errorMessage}</p>}
             <div style={divStyles}>
                 <label style={labelStyles}>Username</label>
                 <input style={inputStyles} required type="text" name="username" placeholder="Enter a username" onChange={handleChange}></input>

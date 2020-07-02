@@ -12,6 +12,7 @@ const NewBlogPost = ({history}) => {
     }
 
  
+    const [errorMessage, setErrorMessage] = useState(null);
 
     function handleChange(event) {
         const name = event.target.name
@@ -38,6 +39,7 @@ const NewBlogPost = ({history}) => {
         })
         .catch(error => {
             console.log("Caught error making post: ", error);
+            setErrorMessage("You need to be logged in to post");
         })
        
         
@@ -53,6 +55,7 @@ const NewBlogPost = ({history}) => {
 
     return (
         <form id="newPostForm" onSubmit={handleSubmit}>
+            {errorMessage && <p style={{color: 'red'}}>{errorMessage}</p>}
             <div style={divStyles}>
                 <label style={labelStyles}>Title</label>
                 <input style={inputStyles} required type="text" name="title" placeholder="Enter a title" onChange={handleChange}></input>

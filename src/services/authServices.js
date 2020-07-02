@@ -7,5 +7,10 @@ export async function loginUser(userInfo){
 }
 
 export async function logoutUser(){
-    return api.get('auth/logout');
+    return api.get('/auth/logout');
+}
+
+export async function registerUser(userInfo) {
+    const response = await api.post('auth/register', userInfo);
+    return response.data
 }
